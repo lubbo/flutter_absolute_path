@@ -1,31 +1,26 @@
 package com.kasem.flutter_absolute_path
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import android.util.Log
-import android.content.pm.ProviderInfo
-import android.content.pm.PackageManager
-import android.content.pm.PackageInfo
-import java.security.Provider
 
 
-class FlutterAbsolutePathPlugin(private val context: Context) : MethodCallHandler, FlutterPlugin {
+class FlutterAbsolutePathPlugin() : MethodCallHandler, FlutterPlugin {
 
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "flutter_absolute_path")
-            channel.setMethodCallHandler(FlutterAbsolutePathPlugin(registrar.context()))
-        }
+    private lateinit var applicationContext: Context
 
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        this.applicationContext = binding.applicationContext
+        val channel = MethodChannel(binding.binaryMessenger, "flutter_absolute_path")
+        channel.setMethodCallHandler(FlutterAbsolutePathPlugin())
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        TODO("Not yet implemented")
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -41,7 +36,7 @@ class FlutterAbsolutePathPlugin(private val context: Context) : MethodCallHandle
 //                    return
 //                }
 
-                result.success(FileDirectory.getAbsolutePath(this.context, uri))
+                result.success(FileDirectory.getAbsolutePath(this.applicationContext, uri))
             }
             else -> result.notImplemented()
         }
